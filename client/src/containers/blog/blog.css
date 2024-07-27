@@ -1,3 +1,31 @@
 p {
     color: var(--color-text)
 }
+
+h1 {
+    color: var(--color-text)
+}
+
+ul {
+    color: var(--color-text)
+}
+
+h2 {
+    color: var(--color-text)
+}
+
+.blog__posts {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.blog__post {
+    border: 2px solid var(--color-border);
+    border-radius: 3%;
+    padding: .5rem;
+}
+
+.blog__post-header {
+    color: var(--color-accent)
+}

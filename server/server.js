@@ -1,46 +1,55 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const port = 5000;
+const port = 5001;
+const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/blog', { useNewUrlParser: true, useUnifiedTopology: true });
-
-
-const postSchema = new mongoose.Schema({
-  title: String,
-  content: String,
-  date: { type: Date, default: Date.now }
+const db = new sqlite3.Database('./database.sqlite', (err) => {
+  if (err) {
+    console.error(err.message);
+  } else {
+    console.log('Connected to the SQLite database.');
+  }
 });
 
-const Post = mongoose.model('Post', postSchema);
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    text TEXT NOT NULL,
+    title TEXT NOT NULL
+  )`);
+});
+
+app.get('/api/items', (req, res) => {
+  db.all('SELECT * FROM items', [], (err, rows) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({ data: rows });
+  });
+});
+
+app.post('/api/items', (req, res) => {
+  const { text, title } = req.body;
+  db.run(`INSERT INTO items (text, title) VALUES (?, ?)`, [text, title], function(err) {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({ data: { id: this.lastID, text, title } });
+  });
+});
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.post('/api/posts', async (req, res) => {
-  try {
-    const newPost = new Post(req.body);
-    const savedPost = await newPost.save();
-    res.status(201).json(savedPost);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
 
-app.get('/api/posts', async (req, res) => {
-  try {
-    const posts = await Post.find();
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

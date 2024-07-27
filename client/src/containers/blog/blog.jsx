@@ -4,41 +4,75 @@ import './blog.css'
 
 
 const Blog = () => {
-  const [data, setData] = useState('');
-  const [posts, setPosts] = useState([]);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [hello, setHello] = useState('');
+  const [items, setItems] = useState([]);
+  const [newItem, setNewItem] = useState('');
+  const [newTitle, setNewTitle] = useState('');
 
-  const fetchPosts = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/posts');
-      setPosts(response.data);
-    } catch (error) {
-      console.log('error', error);
-    }
+  const addItem = () => {
+    axios.post('http://localhost:5001/api/items', { text: newItem, title: newTitle })
+      .then(response => {
+        setItems([...items, response.data.data]);
+        setNewItem('');
+        setNewTitle('');
+      })
+      .catch(error => console.error('Error adding item:', error));
   };
 
-  const createPost = async () => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/posts', { title, content });
-      setPosts([...posts, response.data]);
-      setTitle('');
-      setContent('');
-    } catch (error) {
-      console.log('error', error);
-    }
-  };
+  // const fetchPosts = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:5001/api/posts');
+  //     setPosts(response.data);
+  //   } catch (error) {
+  //     console.log('error', error);
+  //   }
+  // };
+
+  // const createPost = async () => {
+  //   try {
+  //     const response = await axios.post('http://localhost:5001/api/posts', { title, content });
+  //     setPosts([...posts, response.data]);
+  //     setTitle('');
+  //     setContent('');
+  //   } catch (error) {
+  //     console.log('error', error);
+  //   }
+  // };
   useEffect(() => {
-    axios.get('http://localhost:5000') // Use relative URL
-      .then(response => setData(response.data))
-      .catch(error => console.log('error', error));
-    fetchPosts();
+    axios.get('http://localhost:5001/api/items')
+      .then(response => setItems(response.data.data))
+      .catch(error => console.error('Error fetching data:', error));
+
+    axios.get('http://localhost:5001/')
+      .then(response => setHello(response.data))
+      .catch(error => console.error('Error fetching data:', error));
+    // fetchPosts();
   }, []);
   return (
     <div>
-      <p>HERE!</p>
-      <p>{data}</p>
-      <div>
+
+      <p>{hello}</p>
+      <h1 className="blog__entries">Blog Entries</h1>
+        <div className="blog__posts">
+          {items.map(item => (
+            <article className="blog__post" key={item.id}>
+              <h2 className="blog__post-header">{item.title}</h2>
+              <p className="blog__post-text">{item.text}</p>
+            </article>
+          ))}
+        </div>
+
+        <input 
+          type="text"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)} />
+        <textarea
+          type="text"
+          value={newItem}
+          onChange={(e) => setNewItem(e.target.value)}
+        />
+        <button onClick={addItem}>Add Entry</button>
+      {/* <div>
         <input
           type="text"
           value={title}
@@ -60,7 +94,7 @@ const Blog = () => {
             <p>{new Date(post.date).toLocaleString()}</p>
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
