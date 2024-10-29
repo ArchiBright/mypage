@@ -3,6 +3,7 @@ import './App.css';
 
 import Navbar from './components/navbar/navbar'
 import Blog from './containers/blog/blog'
+import Player from './components/player/player';
 
 document.addEventListener('mousemove', function(e) {
   const spotlight = document.querySelector('.spotlight');
@@ -17,6 +18,7 @@ const App = () => {
       <div className="spotlight"></div>
         <Navbar />
         <Blog />
+        <Player />
         {/* <Header />
         <Technologies />
         <FrontEndApps />

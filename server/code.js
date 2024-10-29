@@ -1,32 +1,4 @@
-function getRandomComputerResult() {
-  const options = ["Rock", "Paper", "Scissors"];
-  const randomIndex = Math.floor(Math.random() * options.length);
-  return options[randomIndex];
+printGreeting = () => {
+  console.log("Helo there!")
 }
-
-let playerScore = 0;
-let computerScore = 0;
-
-function hasPlayerWonTheRound(player, computer) {
-  return (
-    (player === "Rock" && computer === "Scissors") ||
-    (player === "Scissors" && computer === "Paper") ||
-    (player === "Paper" && computer === "Rock")
-  );
-}
-function getRoundResults(userOption) {
-  const computerResult = getRandomComputerResult();
-  if (hasPlayerWonTheRound(userOption, computerResult)) {
-      playerScore += 1;
-      return console.log("Player won!")
-  }
-  else if (userOption == computerResult) {
-      return console.log('tie')
-  } else {
-      return console.log("Computer has won!")
-    computerScore += 1;
-}
-return 
-
-console.log(getRoundResults("Rock"));
-// console.log("Player Score: ", playerScore, "Computer Score: ", computerScore);
+printGreeting();

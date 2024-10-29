@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import axios from 'axios'
 import './blog.css'
+import { render } from 'react-dom';
 
 
 const Blog = () => {
@@ -8,6 +9,24 @@ const Blog = () => {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState('');
   const [newTitle, setNewTitle] = useState('');
+  const [images, setImages] = useState([]);
+
+  const getPosts = () => {
+    return fetch('https://jsonplaceholder.typicode.com/posts/3')
+    .then(response => response.json())
+    .then(post => renderPost(post))
+  }
+
+  function renderPost(post) {
+    // let postElement = document.querySelector('.api__test');
+    // postElement.textContent = post.body;
+  }
+  getPosts();
+
+  fetch('https://jsonplaceholder.typicode.com/albums/2/photos/')
+      .then(response => response.json())
+      .then(data => setImages(data));
+
 
   const addItem = () => {
     axios.post('http://localhost:5001/api/items', { text: newItem, title: newTitle })
@@ -19,25 +38,6 @@ const Blog = () => {
       .catch(error => console.error('Error adding item:', error));
   };
 
-  // const fetchPosts = async () => {
-  //   try {
-  //     const response = await axios.get('http://localhost:5001/api/posts');
-  //     setPosts(response.data);
-  //   } catch (error) {
-  //     console.log('error', error);
-  //   }
-  // };
-
-  // const createPost = async () => {
-  //   try {
-  //     const response = await axios.post('http://localhost:5001/api/posts', { title, content });
-  //     setPosts([...posts, response.data]);
-  //     setTitle('');
-  //     setContent('');
-  //   } catch (error) {
-  //     console.log('error', error);
-  //   }
-  // };
   useEffect(() => {
     axios.get('http://localhost:5001/api/items')
       .then(response => setItems(response.data.data))
@@ -46,13 +46,27 @@ const Blog = () => {
     axios.get('http://localhost:5001/')
       .then(response => setHello(response.data))
       .catch(error => console.error('Error fetching data:', error));
-    // fetchPosts();
   }, []);
+
+  
   return (
     <div>
 
       <p>{hello}</p>
       <h1 className="blog__entries">Blog Entries</h1>
+
+      <div className='image__galery'>
+          {images.map(image => (
+            <li key={image.id}>
+              <img className="image" src={image.src} alt={image.alt} />
+              <p className="img__description">{image.title}</p>
+            </li>
+          ))}
+        </div>
+
+      <div class="api__test">
+        
+      </div>
         <div className="blog__posts">
           {items.map(item => (
             <article className="blog__post" key={item.id}>
@@ -72,29 +86,7 @@ const Blog = () => {
           onChange={(e) => setNewItem(e.target.value)}
         />
         <button onClick={addItem}>Add Entry</button>
-      {/* <div>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title"
-        />
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="Content"
-        ></textarea>
-        <button onClick={createPost}>Create Post</button>
-      </div>
-      <div>
-        {posts.map((post) => (
-          <div key={post._id}>
-            <h2>{post.title}</h2>
-            <p>{post.content}</p>
-            <p>{new Date(post.date).toLocaleString()}</p>
-          </div>
-        ))}
-      </div> */}
+      {}
     </div>
   );
 };
